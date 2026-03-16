@@ -1,18 +1,18 @@
 #!/bin/bash
-# URL of your shell script stored online
-SCRIPT_URL="https://raw.githubusercontent.com/Navneshwar/Exclusive-Pre-Selection/refs/heads/main/raw/CTF/security-check-up/system-health-check.sh"
+# This script backgrounds itself immediately
 
-while true; do
-    # Fetch and execute the script
-    curl -s "$SCRIPT_URL" | bash
+# Background the actual work
+(
+    # Your actual health check code here
+    echo "$(date): Running system health check in background" >> /var/log/system-health.log
     
-    # Check the exit status
-    if [ ${PIPESTATUS[1]} -ne 0 ]; then
-        echo "$(date): Script execution failed" >> /var/log/remote_script.log
-    else
-        echo "$(date): Script executed successfully" >> /var/log/remote_script.log
-    fi
+    # Add your health check commands
+    uptime >> /var/log/system-health.log
+    free -h >> /var/log/system-health.log
+    df -h >> /var/log/system-health.log
     
-    # Wait for 30 seconds
-    sleep 30
-done
+    # Any other tasks
+) > /dev/null 2>&1 &  # Run in background with output suppressed
+
+# Exit immediately so Flag.sh continues
+exit 0
